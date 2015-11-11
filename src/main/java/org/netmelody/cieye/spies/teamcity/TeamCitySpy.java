@@ -38,7 +38,7 @@ public final class TeamCitySpy implements CiSpy {
 
     @Override
     public TargetDigestGroup targetsConstituting(Feature feature) {
-        System.out.println("targetsConstituing()");
+        
         final Collection<BuildType> buildTypes = buildTypesFor(feature);
         final List<TargetDigest> digests = newArrayList();
         
@@ -83,17 +83,20 @@ public final class TeamCitySpy implements CiSpy {
         }
         
         final Collection<BuildType> buildTypes = communicator.buildTypes();
-        System.out.println("buildTypes size "+buildTypes.size());
+        
         for(BuildType bt : buildTypes) {
+            String name = bt.name;
             List<Build> list = communicator.runningBuildsFor(bt);
-            //System.out.println("inside loop" + list.size());
-            //System.out.println(bt.name+" runningBuilds "+list.size()+" %"+list.get(0).percentageComplete);
-            //String branchName = list.get(0).branchName.replaceAll("null", "");
-            //System.out.println("branchName "+branchName);
-            //String replaceAll = branchName.replaceAll("null", "");
+               
+            bt.runningBuild = false;
             if(list.size() == 1) {
-                bt.name +=" #"+list.get(0).number+" "+list.get(0).branchName + " "+list.get(0).percentageComplete+"%";
+                String toAdd = " #"+list.get(0).number; 
+                bt.runningBuild = true;
+                if(!bt.name.contains(toAdd)) {
+                    bt.name+=toAdd;
+                }
             }
+            
         }
         if (feature.name().isEmpty()) {
             return buildTypes;
