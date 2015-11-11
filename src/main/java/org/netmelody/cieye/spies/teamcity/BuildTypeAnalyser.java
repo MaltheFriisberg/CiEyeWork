@@ -42,11 +42,13 @@ public final class BuildTypeAnalyser {
         long startTime = 0L;
             
         for(Build build : communicator.runningBuildsFor(buildType)) {
+            buildType.name+=" "+build.branchName;
             final BuildDetail buildDetail = communicator.detailsOf(build);
             startTime = Math.max(buildDetail.startDateTime(), startTime);
             sponsors.addAll(sponsorsOf(buildDetail));
             runningBuilds.add(new RunningBuild(percentageOf(build.percentageComplete), buildDetail.status()));
         }
+        System.out.println("runningBuilds size "+runningBuilds.size());
         
         Status currentStatus = Status.UNKNOWN;
         final Build lastCompletedBuild = communicator.lastCompletedBuildFor(buildTypeDetail);

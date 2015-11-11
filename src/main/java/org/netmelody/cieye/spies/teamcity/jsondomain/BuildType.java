@@ -11,4 +11,7 @@ public class BuildType {
     public String webUrl() {
         return webUrl + "&guest=1";
     }
+    public void addBranchName(String name) {
+        this.name+= " " + name;
+    }
 }

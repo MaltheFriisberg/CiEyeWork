@@ -38,6 +38,7 @@ public final class TeamCitySpy implements CiSpy {
 
     @Override
     public TargetDigestGroup targetsConstituting(Feature feature) {
+        System.out.println("targetsConstituing()");
         final Collection<BuildType> buildTypes = buildTypesFor(feature);
         final List<TargetDigest> digests = newArrayList();
         
@@ -45,6 +46,7 @@ public final class TeamCitySpy implements CiSpy {
             final TargetDigest targetDigest = new TargetDigest(communicator.endpoint() + buildType.href, buildType.webUrl(), buildType.name, UNKNOWN);
             digests.add(targetDigest);
             recognisedBuildTypes.put(targetDigest.id(), buildType);
+            
         }
         
         return new TargetDigestGroup(digests);
@@ -75,11 +77,24 @@ public final class TeamCitySpy implements CiSpy {
     }
 
     private Collection<BuildType> buildTypesFor(final Feature feature) {
+        
         if (!communicator.canSpeakFor(feature)) {
             return newArrayList();
         }
         
         final Collection<BuildType> buildTypes = communicator.buildTypes();
+        System.out.println("buildTypes size "+buildTypes.size());
+        for(BuildType bt : buildTypes) {
+            List<Build> list = communicator.runningBuildsFor(bt);
+            //System.out.println("inside loop" + list.size());
+            //System.out.println(bt.name+" runningBuilds "+list.size()+" %"+list.get(0).percentageComplete);
+            //String branchName = list.get(0).branchName.replaceAll("null", "");
+            //System.out.println("branchName "+branchName);
+            //String replaceAll = branchName.replaceAll("null", "");
+            if(list.size() == 1) {
+                bt.name +=" #"+list.get(0).number+" "+list.get(0).branchName + " "+list.get(0).percentageComplete+"%";
+            }
+        }
         if (feature.name().isEmpty()) {
             return buildTypes;
         }
@@ -88,6 +103,7 @@ public final class TeamCitySpy implements CiSpy {
     }
 
     private Predicate<BuildType> withFeatureName(final String featureName) {
+        
         return new Predicate<BuildType>() {
             @Override public boolean apply(BuildType buildType) {
                 return buildType.projectName.trim().equals(featureName.trim());

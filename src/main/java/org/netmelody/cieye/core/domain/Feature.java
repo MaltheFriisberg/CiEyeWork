@@ -2,6 +2,7 @@ package org.netmelody.cieye.core.domain;
 
 import com.google.common.base.Preconditions;
 
+
 public final class Feature {
 
     private final String name;

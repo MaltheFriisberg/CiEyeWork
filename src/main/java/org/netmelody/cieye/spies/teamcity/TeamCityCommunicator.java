@@ -28,6 +28,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 
+
 public final class TeamCityCommunicator {
 
     private final Contact contact;
@@ -45,14 +46,17 @@ public final class TeamCityCommunicator {
     }
 
     public boolean canSpeakFor(Feature feature) {
+        
         return endpoint.equals(feature.endpoint());
     }
 
     public Collection<Project> projects() {
+        
         return makeTeamCityRestCall(endpoint + prefix + "/projects", TeamCityProjects.class).project();
     }
 
     public Collection<BuildType> buildTypes() {
+        
         return makeTeamCityRestCall(endpoint + prefix + "/buildTypes", BuildTypes.class).buildType();
     }
 
@@ -61,6 +65,7 @@ public final class TeamCityCommunicator {
     }
 
     public BuildTypeDetail detailsFor(BuildType buildType) {
+        
         return makeTeamCityRestCall(endpoint + buildType.href, BuildTypeDetail.class);
     }
 
@@ -73,11 +78,13 @@ public final class TeamCityCommunicator {
     }
 
     public List<Build> runningBuildsFor(BuildType buildType) {
-        return makeTeamCityRestCall(endpoint + prefix + "/builds/?locator=running:true,buildType:id:" + buildType.id, Builds.class).build();
+        return makeTeamCityRestCall(endpoint + prefix + "/builds/?locator=running:true,buildType:id:"
+                + buildType.id+",branch:default:any", Builds.class).build();
     }
 
     public List<Investigation> investigationsOf(BuildType buildType) {
-        return makeTeamCityRestCall(endpoint + buildType.href + "/investigations", Investigations.class).investigation();
+        return makeTeamCityRestCall(endpoint + buildType.href + "/investigations", 
+                Investigations.class).investigation();
     }
 
     public BuildDetail detailsOf(Build build) {
