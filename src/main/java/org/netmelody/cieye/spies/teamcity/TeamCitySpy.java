@@ -85,12 +85,12 @@ public final class TeamCitySpy implements CiSpy {
         final Collection<BuildType> buildTypes = communicator.buildTypes();
         
         for(BuildType bt : buildTypes) {
-            String name = bt.name;
+            
             List<Build> list = communicator.runningBuildsFor(bt);
                
             bt.runningBuild = false;
-            if(list.size() == 1) {
-                String toAdd = " #"+list.get(0).number; 
+            if(list.size() == 1 && list.get(0) != null) {
+                String toAdd = " #"+list.get(0).number+" "+list.get(0).branchName; 
                 bt.runningBuild = true;
                 if(!bt.name.contains(toAdd)) {
                     bt.name+=toAdd;
