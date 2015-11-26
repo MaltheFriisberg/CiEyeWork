@@ -24,17 +24,19 @@ import org.netmelody.cieye.spies.teamcity.jsondomain.BuildTypeDetail;
 
 import com.google.common.base.Predicate;
 import java.util.ArrayList;
+import java.util.Vector;
 
 public final class TeamCitySpy implements CiSpy {
 
     private final TeamCityCommunicator communicator;
     private final BuildTypeAnalyser buildTypeAnalyser;
-
+    private final Vector<BuildType> buildTypes;
     private final Map<TargetId, BuildType> recognisedBuildTypes = newHashMap();
     
     public TeamCitySpy(String endpoint, KnownOffendersDirectory detective, Contact contact) {
         this.communicator = new TeamCityCommunicator(contact, endpoint);
         this.buildTypeAnalyser = new BuildTypeAnalyser(this.communicator, detective);
+        buildTypes = new Vector<BuildType>();
     }
 
     @Override
@@ -97,21 +99,20 @@ public final class TeamCitySpy implements CiSpy {
         if (!communicator.canSpeakFor(feature)) {
             return newArrayList();
         }
-        
-        final Collection<BuildType> buildTypes = communicator.buildTypes();
-        
+            System.out.println(buildTypes.size());
+        //final Collection<BuildType> buildTypes = communicator.buildTypes();
+        buildTypes.addAll(communicator.buildTypes());
         for(BuildType bt : buildTypes) {
             
             List<Build> list = communicator.runningBuildsFor(bt);
                
             
             if(list.size() == 1 && list.get(0) != null) {
-                String number = list.get(0).number;
                 String branchName = list.get(0).branchName;
                 if(branchName == null) {
                     branchName = "";
                 }
-                String toAdd = " #"+number+" "+ branchName;
+                String toAdd = " "+ branchName;
                 
                 if(!bt.name.contains(toAdd)) {
                     bt.name+=toAdd;
@@ -123,7 +124,8 @@ public final class TeamCitySpy implements CiSpy {
             return buildTypes;
         }
         
-        return filter(buildTypes, withFeatureName(feature.name()));
+        //return filter(buildTypes, withFeatureName(feature.name()));
+        return buildTypes;
         } catch(Exception e) {
             System.out.print("BuildTypesFor");
             e.printStackTrace(System.out);
