@@ -23,6 +23,7 @@ import org.netmelody.cieye.spies.teamcity.jsondomain.BuildType;
 import org.netmelody.cieye.spies.teamcity.jsondomain.BuildTypeDetail;
 
 import com.google.common.base.Predicate;
+import java.util.ArrayList;
 
 public final class TeamCitySpy implements CiSpy {
 
@@ -38,7 +39,7 @@ public final class TeamCitySpy implements CiSpy {
 
     @Override
     public TargetDigestGroup targetsConstituting(Feature feature) {
-        
+        try {
         final Collection<BuildType> buildTypes = buildTypesFor(feature);
         final List<TargetDigest> digests = newArrayList();
         
@@ -50,6 +51,10 @@ public final class TeamCitySpy implements CiSpy {
         }
         
         return new TargetDigestGroup(digests);
+        } catch(Exception e) {
+            e.printStackTrace(System.out);
+        }
+        return new TargetDigestGroup();
     }
 
     @Override
@@ -77,7 +82,7 @@ public final class TeamCitySpy implements CiSpy {
     }
 
     private Collection<BuildType> buildTypesFor(final Feature feature) {
-        
+        try {
         if (!communicator.canSpeakFor(feature)) {
             return newArrayList();
         }
@@ -92,7 +97,7 @@ public final class TeamCitySpy implements CiSpy {
             if(list.size() == 1 && list.get(0) != null) {
                 String number = list.get(0).number;
                 String branchName = list.get(0).branchName;
-                if(branchName == null && branchName.isEmpty()) {
+                if(branchName == null) {
                     branchName = "";
                 }
                 String toAdd = " #"+number+" "+ branchName;
@@ -108,6 +113,13 @@ public final class TeamCitySpy implements CiSpy {
         }
         
         return filter(buildTypes, withFeatureName(feature.name()));
+        } catch(Exception e) {
+            System.out.print("BuildTypesFor");
+            e.printStackTrace(System.out);
+            
+        }
+        ArrayList<BuildType> b = new ArrayList<BuildType>();
+            return b;
     }
 
     private Predicate<BuildType> withFeatureName(final String featureName) {
