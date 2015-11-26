@@ -31,6 +31,7 @@ public final class BuildTypeAnalyser {
     }
     
     public TargetDetail targetFrom(BuildType buildType) {
+        try {
         final BuildTypeDetail buildTypeDetail = communicator.detailsFor(buildType);
         
         if (buildTypeDetail.paused) {
@@ -71,13 +72,27 @@ public final class BuildTypeAnalyser {
         }
         
         return new TargetDetail(communicator.endpoint() + buildType.href, buildType.webUrl(), buildType.name, currentStatus, startTime, runningBuilds, sponsors);
+        } catch(Exception e) {
+            System.out.print("BuildTypeAnalyser.targetFrom()");
+            e.printStackTrace(System.out);
+        }
+        final List<RunningBuild> running = new ArrayList<RunningBuild>();
+        Set<Sponsor> sponsor = new HashSet<Sponsor>();
+        long id = 5;
+        return new TargetDetail(" ", " ", " ", Status.UNKNOWN, id, running, sponsor);
     }
 
     private Set<Sponsor> sponsorsOf(BuildDetail build) {
+        try {
         return detective.search(analyseChanges(build));
+        } catch(Exception e) {
+            e.printStackTrace(System.out);
+        }
+        return null;
     }
 
     private String analyseChanges(BuildDetail build) {
+        try {
         if (build.changes == null || build.changes.count == 0) {
             return "";
         }
@@ -92,7 +107,12 @@ public final class BuildTypeAnalyser {
             result.append(changeDetail.comment);
             result.append(' ');
         }
-        
         return result.toString();
+        }catch(Exception e) {
+            System.out.print("BuildTypeAnalyser.analyseChanges");
+            e.printStackTrace();
+        }
+        return "";
+        
     }
 }
